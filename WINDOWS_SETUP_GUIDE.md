@@ -225,32 +225,43 @@ Search for `getForegroundApp` (around line 233).
 
 ---
 
-### Automate the fixes with patch-package (optional but recommended)
+### Patches are already included in this repo — no manual steps needed
 
-To avoid re-applying the fixes after every `npm install`:
+If you cloned this repository, both fixes are pre-saved as patch files in the `patches/` folder:
+
+```
+patches/
+  mobilecli+0.3.71.patch
+  @mobilewright+driver-mobilecli+0.0.32.patch
+```
+
+The `postinstall` script in `package.json` runs `patch-package` automatically, so a plain `npm install` applies both fixes for you:
+
+```powershell
+npm install   # patches are applied automatically at the end
+```
+
+You can verify the patches were applied by checking the output — you should see:
+
+```
+> mobilewright_learning@1.0.0 postinstall
+> patch-package
+
+patch-package 8.0.1
+Applying patches...
+mobilecli+0.3.71 ✔
+@mobilewright+driver-mobilecli+0.0.32 ✔
+```
+
+**If you are setting up from scratch (not from this repo):** apply the two fixes manually as described above, then run:
 
 ```powershell
 npm install patch-package --save-dev
-```
-
-Apply the two fixes above, then run:
-
-```powershell
 npx patch-package mobilecli
 npx patch-package @mobilewright/driver-mobilecli
 ```
 
-Add to `package.json`:
-
-```json
-{
-  "scripts": {
-    "postinstall": "patch-package"
-  }
-}
-```
-
-The patches are now saved in a `patches/` folder and automatically re-applied on every `npm install`.
+Add `"postinstall": "patch-package"` to your `package.json` scripts. The patches are saved to `patches/` and committed to your repo so teammates get them automatically.
 
 ---
 
