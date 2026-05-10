@@ -4,12 +4,16 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "npx mobilewright test",
+    "postinstall": "patch-package"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
     "@mobilewright/test": "^0.0.32"
+  },
+  "devDependencies": {
+    "patch-package": "^8.0.1"
   }
 }

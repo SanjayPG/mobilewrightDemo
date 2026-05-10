@@ -1,0 +1,28 @@
+diff --git a/node_modules/@mobilewright/driver-mobilecli/dist/driver.js b/node_modules/@mobilewright/driver-mobilecli/dist/driver.js
+index 5294998..1245983 100644
+--- a/node_modules/@mobilewright/driver-mobilecli/dist/driver.js
++++ b/node_modules/@mobilewright/driver-mobilecli/dist/driver.js
+@@ -231,12 +231,17 @@ export class MobilecliDriver {
+         }));
+     }
+     async getForegroundApp() {
+-        const result = await this.call('device.apps.foreground');
+-        return {
+-            bundleId: result.bundleId ?? result.packageName ?? '',
+-            name: result.appName,
+-            version: result.version,
+-        };
++        try {
++            const result = await this.call('device.apps.foreground');
++            return {
++                bundleId: result.bundleId ?? result.packageName ?? '',
++                name: result.appName,
++                version: result.version,
++            };
++        }
++        catch {
++            return { bundleId: '' };
++        }
+     }
+     async installApp(path) {
+         await this.call('device.apps.install', { path });
