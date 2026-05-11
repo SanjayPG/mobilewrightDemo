@@ -90,9 +90,14 @@ mkdir my-mobile-tests
 cd my-mobile-tests
 npm init -y
 npm install @mobilewright/test
+npx mobilewright init
 ```
 
-Create `mobilewright.config.ts`:
+> `npm init -y` must come first — without a `package.json` in the folder, npm will install packages into a parent directory instead of here.
+
+> `npx mobilewright init` scaffolds two files for you: `mobilewright.config.ts` and an `example.test.ts`. You do not need to create them manually.
+
+Update `mobilewright.config.ts` with your target app settings (the generated file defaults to iOS — change `platform` to `android` and set your `bundleId`):
 
 ```typescript
 import { defineConfig } from 'mobilewright';
