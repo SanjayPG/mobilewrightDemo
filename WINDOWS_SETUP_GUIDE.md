@@ -89,7 +89,7 @@ emulator -accel-check
 mkdir my-mobile-tests
 cd my-mobile-tests
 npm init -y
-npm install mobilewright @mobilewright/test
+npm install @mobilewright/test
 ```
 
 Create `mobilewright.config.ts`:
@@ -384,3 +384,82 @@ Run the environment variable commands from Step 1 in an elevated PowerShell and 
 
 ### Chrome restores a previous session (breaks tests)
 Use `device.goto('https://...')` to navigate to the exact URL you need at the start of each test instead of relying on Chrome's starting state. This bypasses session restore entirely.
+
+---
+
+## Optional: Running the Purchase Journey Test (MyDemoApp)
+
+This repo also includes `purchase-journey.test.ts` — a full end-to-end purchase flow through login, product selection, checkout, and order confirmation — targeting the **Sauce Labs My Demo App**.
+
+### Step 1 — Download and install the APK
+
+```powershell
+# Download the APK
+curl -L -o mda.apk https://github.com/saucelabs/my-demo-app-android/releases/download/2.2.0/mda-2.2.0-25.apk
+
+# Install it on the running emulator
+adb -s emulator-5554 install mda.apk
+```
+
+Verify it installed:
+
+```powershell
+adb -s emulator-5554 shell pm list packages | findstr saucelabs
+# Should print: package:com.saucelabs.mydemoapp.android
+```
+
+### Step 2 — Switch to the MyDemoApp config
+
+Open `mobilewright.config.ts` and swap the two blocks:
+
+1. Comment out the entire Chrome `export default defineConfig({...});` block at the top
+2. Uncomment the MyDemoApp block at the bottom (remove the leading `//` from each line)
+
+The active config should look like this:
+
+```typescript
+export default defineConfig({
+  platform: 'android',
+  bundleId: 'com.saucelabs.mydemoapp.android',
+  autoAppLaunch: false,   // test controls launch (after clearing app data)
+  timeout: 120_000,
+  retries: 0,
+  reporter: 'html',
+  driver: {
+    type: 'mobilecli',
+  },
+});
+```
+
+> `autoAppLaunch: false` because the test's `beforeEach` handles launch itself — it clears login state via the app's menu before each run.
+
+### Step 3 — Run the test
+
+```powershell
+npx mobilewright test purchase-journey.test.ts
+```
+
+Expected output:
+
+```
+Running 1 test using 1 worker
+  1 passed (~2m)
+```
+
+### Step 4 — Switch the config back
+
+When you're done, restore the Chrome config in `mobilewright.config.ts` so `example.test.ts` keeps working:
+
+1. Uncomment the Chrome block at the top
+2. Comment out the MyDemoApp block at the bottom
+
+### Test account and product
+
+| Field | Value |
+|---|---|
+| Username | `bod@example.com` |
+| Password | `10203040` |
+| Product | Sauce Labs Backpack — $29.99 |
+| Total (with tax/shipping) | $35.98 |
+
+These are built into the demo app — no account creation needed.
