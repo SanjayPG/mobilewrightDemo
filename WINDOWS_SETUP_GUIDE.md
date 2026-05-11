@@ -128,6 +128,23 @@ Create `tsconfig.json`:
 }
 ```
 
+Update the `scripts` section in `package.json` and install `patch-package`:
+
+```powershell
+npm install patch-package --save-dev
+```
+
+Then open `package.json` and update the `scripts` section to:
+
+```json
+"scripts": {
+  "test": "npx mobilewright test",
+  "postinstall": "patch-package"
+}
+```
+
+> The `postinstall` script runs `patch-package` automatically every time you run `npm install`, so the Windows fixes are always applied.
+
 ---
 
 ## Step 5 — Apply Windows Bug Fixes
